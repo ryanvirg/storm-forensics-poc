@@ -1,0 +1,391 @@
+{
+  "retrieved_at": "2026-09-12T01:02:21+00:00",
+  "source_url": "https://gis.mhfd.org/server/rest/services/Boundaries/MHFDBoundary/FeatureServer/0",
+  "query_url": "https://gis.mhfd.org/server/rest/services/Boundaries/MHFDBoundary/FeatureServer/0/query?where=1%3D1&outFields=%2A&returnGeometry=true&outSR=4326&f=geojson",
+  "item_url": "https://gis.mhfd.org/server/rest/services/Boundaries/MHFDBoundary/FeatureServer/0/iteminfo?f=pjson",
+  "layer": {
+    "currentVersion": 11.5,
+    "cimVersion": "3.5.0",
+    "id": 0,
+    "name": "MHFD Boundary",
+    "type": "Feature Layer",
+    "parentLayer": null,
+    "defaultVisibility": true,
+    "minScale": 0,
+    "maxScale": 0,
+    "canScaleSymbols": false,
+    "geometryType": "esriGeometryPolygon",
+    "description": "The Flood District partners with metro cities and counties to design and construct flood control and warning measures, open space, regional paths, and remove trash and debris in our streams. Established by the Colorado legislature in 1969, MHFD covers an area of 1608 square miles and includes Denver, parts of the 6 surrounding counties, and all or parts of 35 incorporated cities and towns.The District runs on a $30 million annual budget with only 32 employees. Contracting out the work keeps overhead low, costs down, and ensures all the jobs stay local.",
+    "copyrightText": "MHFD GIS",
+    "editFieldsInfo": null,
+    "ownershipBasedAccessControlForFeatures": null,
+    "syncCanReturnChanges": false,
+    "relationships": [],
+    "isDataVersioned": false,
+    "isDataArchived": false,
+    "infoInEstimates": [
+      "extent",
+      "count"
+    ],
+    "isDataBranchVersioned": false,
+    "isDataReplicaTracked": false,
+    "isCoGoEnabled": false,
+    "supportsRollbackOnFailureParameter": true,
+    "archivingInfo": {
+      "supportsQueryWithHistoricMoment": false,
+      "startArchivingMoment": -1
+    },
+    "supportsStatistics": true,
+    "supportsExceedsLimitStatistics": true,
+    "supportsAdvancedQueries": true,
+    "supportsValidateSQL": true,
+    "supportsCoordinatesQuantization": true,
+    "supportsQuantizationEditMode": true,
+    "supportsCalculate": true,
+    "supportsASyncCalculate": true,
+    "hasContingentValuesDefinition": false,
+    "supportsDurableUrlForSyncModelNone": false,
+    "supportsDatumTransformation": true,
+    "advancedQueryCapabilities": {
+      "supportsPagination": true,
+      "supportsQueryWithDistance": true,
+      "supportsReturningQueryExtent": true,
+      "supportsStatistics": true,
+      "supportsPercentileStatistics": true,
+      "supportsHavingClause": true,
+      "supportsOrderBy": true,
+      "supportsDistinct": true,
+      "supportsCountDistinct": true,
+      "supportsAdvancedQueryRelated": true,
+      "supportsQueryRelatedPagination": true,
+      "supportsCurrentUserQueries": true,
+      "supportsFullTextSearch": true,
+      "fullTextSearchCapabilities": {
+        "supportsSearchOperator": true,
+        "supportsOperator": false,
+        "supportsSqlExpressionInFullText": true
+      },
+      "fullTextSearchableFields": [],
+      "supportsQueryWithResultType": true,
+      "supportsReturningGeometryCentroid": true,
+      "supportsReturningGeometryEnvelope": true,
+      "supportsSqlExpression": true,
+      "supportsQueryWithDatumTransformation": true,
+      "supportsLod": false,
+      "supportsQueryWithLodSR": false,
+      "supportsQueryAnalytic": true,
+      "supportsTrueCurve": true,
+      "supportedCurveTypes": [
+        "esriGeometryCircularArc",
+        "esriGeometryEllipticArc",
+        "esriGeometryBezier3Curve"
+      ],
+      "supportsQueryWithCacheHint": false
+    },
+    "advancedQueryAnalyticCapabilities": {
+      "supportsLinearRegression": true,
+      "supportsAsync": true,
+      "supportsPercentileAnalytic": true
+    },
+    "advancedEditingCapabilities": {
+      "supportedSqlFormatsInCalculate": [
+        "standard"
+      ],
+      "supportsAsyncApplyEdits": true,
+      "supportsApplyEditsbyUploadID": true,
+      "supportedApplyEditsUploadIDFormats": "JSON,PBF"
+    },
+    "hasGeometryProperties": true,
+    "geometryProperties": {
+      "shapeAreaFieldName": "Shape__Area",
+      "shapeLengthFieldName": "Shape__Length",
+      "units": "esriMeters"
+    },
+    "hasMetadata": true,
+    "extent": {
+      "xmin": -11724740.794420214,
+      "ymin": 4779445.284375086,
+      "xmax": -11631076.530040402,
+      "ymax": 4885173.441905991,
+      "spatialReference": {
+        "wkid": 102100,
+        "latestWkid": 3857,
+        "xyTolerance": 0.001,
+        "zTolerance": 0.001,
+        "mTolerance": 0.001,
+        "falseX": -20037700,
+        "falseY": -30241100,
+        "xyUnits": 10000,
+        "falseZ": -100000,
+        "zUnits": 10000,
+        "falseM": -100000,
+        "mUnits": 10000
+      }
+    },
+    "spatialReference": {
+      "wkid": 102100,
+      "latestWkid": 3857,
+      "xyTolerance": 0.001,
+      "zTolerance": 0.001,
+      "mTolerance": 0.001,
+      "falseX": -20037700,
+      "falseY": -30241100,
+      "xyUnits": 10000,
+      "falseZ": -100000,
+      "zUnits": 10000,
+      "falseM": -100000,
+      "mUnits": 10000
+    },
+    "sourceSpatialReference": {
+      "wkid": 103013,
+      "latestWkid": 6428,
+      "xyTolerance": 0.003280833333333333,
+      "zTolerance": 0.001,
+      "mTolerance": 0.001,
+      "falseX": -118767900,
+      "falseY": -94525500,
+      "xyUnits": 3048.0060960121928,
+      "falseZ": 0,
+      "zUnits": 1,
+      "falseM": 0,
+      "mUnits": 1
+    },
+    "drawingInfo": {
+      "renderer": {
+        "type": "simple",
+        "symbol": {
+          "type": "esriSFS",
+          "style": "esriSFSSolid",
+          "color": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "outline": {
+            "type": "esriSLS",
+            "style": "esriSLSSolid",
+            "color": [
+              0,
+              0,
+              0,
+              255
+            ],
+            "width": 3
+          }
+        }
+      },
+      "scaleSymbols": true,
+      "transparency": 0,
+      "labelingInfo": null
+    },
+    "hasM": false,
+    "hasZ": false,
+    "allowGeometryUpdates": true,
+    "allowTrueCurvesUpdates": false,
+    "onlyAllowTrueCurveUpdatesByTrueCurveClients": true,
+    "hasAttachments": false,
+    "supportsApplyEditsWithGlobalIds": false,
+    "htmlPopupType": "esriServerHTMLPopupTypeAsHTMLText",
+    "objectIdField": "OBJECTID",
+    "globalIdField": "",
+    "displayField": "area_ac",
+    "typeIdField": "",
+    "subtypeField": "",
+    "fields": [
+      {
+        "name": "OBJECTID",
+        "type": "esriFieldTypeOID",
+        "alias": "OBJECTID",
+        "domain": null,
+        "editable": false,
+        "nullable": false,
+        "defaultValue": null,
+        "modelName": "OBJECTID"
+      },
+      {
+        "name": "notes",
+        "type": "esriFieldTypeString",
+        "alias": "Notes",
+        "domain": null,
+        "editable": true,
+        "nullable": true,
+        "length": 254,
+        "defaultValue": null,
+        "modelName": "notes"
+      },
+      {
+        "name": "projection",
+        "type": "esriFieldTypeString",
+        "alias": "Projection",
+        "domain": null,
+        "editable": true,
+        "nullable": true,
+        "length": 254,
+        "defaultValue": null,
+        "modelName": "projection"
+      },
+      {
+        "name": "area_ac",
+        "type": "esriFieldTypeDouble",
+        "alias": "Acres",
+        "domain": null,
+        "editable": true,
+        "nullable": true,
+        "defaultValue": null,
+        "modelName": "area_ac"
+      },
+      {
+        "name": "area_sqmi",
+        "type": "esriFieldTypeDouble",
+        "alias": "Area (sqmi)",
+        "domain": null,
+        "editable": true,
+        "nullable": true,
+        "defaultValue": null,
+        "modelName": "area_sqmi"
+      },
+      {
+        "name": "perimeter_ft",
+        "type": "esriFieldTypeDouble",
+        "alias": "Perimeter",
+        "domain": null,
+        "editable": true,
+        "nullable": true,
+        "defaultValue": null,
+        "modelName": "perimeter_ft"
+      },
+      {
+        "name": "perimeter_mi",
+        "type": "esriFieldTypeDouble",
+        "alias": "Perimeter (mi)",
+        "domain": null,
+        "editable": true,
+        "nullable": true,
+        "defaultValue": null,
+        "modelName": "perimeter_mi"
+      },
+      {
+        "name": "Shape__Area",
+        "type": "esriFieldTypeDouble",
+        "alias": "Shape.STArea()",
+        "domain": null,
+        "editable": false,
+        "nullable": true,
+        "defaultValue": null,
+        "modelName": "Shape.STArea()",
+        "required": true
+      },
+      {
+        "name": "Shape__Length",
+        "type": "esriFieldTypeDouble",
+        "alias": "Shape.STLength()",
+        "domain": null,
+        "editable": false,
+        "nullable": true,
+        "defaultValue": null,
+        "modelName": "Shape.STLength()",
+        "required": true
+      }
+    ],
+    "geometryField": {
+      "name": "Shape",
+      "type": "esriFieldTypeGeometry",
+      "alias": "Shape",
+      "domain": null,
+      "editable": true,
+      "nullable": true,
+      "defaultValue": null,
+      "modelName": "Shape"
+    },
+    "indexes": [
+      {
+        "name": "R57_pk",
+        "isAscending": true,
+        "isUnique": true,
+        "description": "",
+        "fields": "OBJECTID"
+      },
+      {
+        "name": "S35_idx",
+        "isAscending": true,
+        "isUnique": true,
+        "description": "",
+        "fields": "Shape"
+      }
+    ],
+    "datesInUnknownTimezone": false,
+    "dateFieldsTimeReference": {
+      "timeZone": "Mountain Standard Time",
+      "timeZoneIANA": "Etc/GMT+7",
+      "respectsDaylightSaving": false
+    },
+    "preferredTimeReference": null,
+    "types": [],
+    "templates": [
+      {
+        "name": "MHFD Boundary",
+        "description": "",
+        "prototype": {
+          "attributes": {
+            "perimeter_mi": null,
+            "perimeter_ft": null,
+            "notes": null,
+            "projection": null,
+            "area_ac": null,
+            "area_sqmi": null
+          }
+        },
+        "drawingTool": "esriFeatureEditToolPolygon"
+      }
+    ],
+    "maxRecordCount": 2000,
+    "supportedQueryFormats": "JSON, geoJSON, PBF",
+    "supportedExportFormats": "sqlite,filegdb,shapefile,csv,geojson",
+    "capabilities": "Query,Extract",
+    "useStandardizedQueries": true,
+    "bigIntegerRestrictedTo53Bits": true,
+    "supportedSpatialRelationships": [
+      "esriSpatialRelIntersects",
+      "esriSpatialRelContains",
+      "esriSpatialRelCrosses",
+      "esriSpatialRelEnvelopeIntersects",
+      "esriSpatialRelIndexIntersects",
+      "esriSpatialRelOverlaps",
+      "esriSpatialRelTouches",
+      "esriSpatialRelWithin",
+      "esriSpatialRelRelation"
+    ],
+    "supportsAppend": true,
+    "supportedAppendFormats": "FILEGDB,PBF",
+    "standardMaxRecordCount": 4000,
+    "tileMaxRecordCount": 4000,
+    "standardMaxRecordCountNoGeometry": 32000,
+    "maxRecordCountFactor": 1,
+    "serviceItemId": "cad7a2d5171e4916b993549f5125057b"
+  },
+  "item": {
+    "culture": "en-US",
+    "name": "",
+    "guid": "",
+    "catalogPath": "",
+    "snippet": "The Mile High Flood District (MHFD) Boundary was digitized from US Department of Interior BLM Township and Range data using the descriptions from Colorado State Senate Bill # 104, Section 1, 32-11-202.",
+    "description": "<DIV STYLE=\"text-align:Left;\"><DIV><DIV><P><SPAN>The Flood District partners with metro cities and counties to design and construct flood control and warning measures, open space, regional paths, and remove trash and debris in our streams. Established by the Colorado legislature in 1969, MHFD covers an area of 1608 square miles and includes Denver, parts of the 6 surrounding counties, and all or parts of 35 incorporated cities and towns.The District runs on a $30 million annual budget with only 32 employees. Contracting out the work keeps overhead low, costs down, and ensures all the jobs stay local.</SPAN></P></DIV></DIV></DIV>",
+    "summary": "The Mile High Flood District (MHFD) Boundary was digitized from US Department of Interior BLM Township and Range data using the descriptions from Colorado State Senate Bill # 104, Section 1, 32-11-202.",
+    "title": "MHFD Boundary",
+    "tags": [
+      "District Boundary",
+      "MHFD"
+    ],
+    "type": "",
+    "typeKeywords": [],
+    "thumbnail": "",
+    "url": "",
+    "minScale": 150000000,
+    "maxScale": 5000,
+    "spatialReference": "",
+    "accessInformation": "MHFD GIS",
+    "licenseInfo": "",
+    "portalUrl": ""
+  }
+}

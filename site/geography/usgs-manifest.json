@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "retrieved_at_utc": "2026-09-12T01:03:09.180768+00:00",
+  "reference_file": "reference.json",
+  "crs": "EPSG:32613",
+  "bbox_m": {
+    "xmin": 458064.58138263633,
+    "ymin": 4352087.30159522,
+    "xmax": 558064.5813826363,
+    "ymax": 4452087.30159522
+  },
+  "extent_km": 100,
+  "north_up": true,
+  "pixel_size_m": 62.5,
+  "basemaps": {
+    "imagery": {
+      "file": "usgs-imagery.jpg",
+      "label": "USGS imagery",
+      "attribution": "USDA, USGS The National Map: Orthoimagery. Data refreshed June, 2024.",
+      "source_service_url": "https://basemap.nationalmap.gov/arcgis/rest/services/USGSImageryOnly/MapServer",
+      "source_metadata_file": "usgs-imagery-service.json",
+      "export_url": "https://basemap.nationalmap.gov/arcgis/rest/services/USGSImageryOnly/MapServer/export?f=json&bbox=458064.58138263633%2C4352087.30159522%2C558064.5813826363%2C4452087.30159522&bboxSR=32613&imageSR=32613&size=1600%2C1600&format=jpg&dpi=96&transparent=false",
+      "returned_image_url": "https://basemap.nationalmap.gov/arcgis/rest/directories/basemap_output/USGSImageryOnly_MapServer/_ags_map852c905e18d241b6a18673817e6855fe.jpg",
+      "returned_extent": {
+        "xmin": 458064.58138263633,
+        "ymin": 4352087.30159522,
+        "xmax": 558064.5813826363,
+        "ymax": 4452087.30159522,
+        "spatialReference": {
+          "wkid": 32613,
+          "latestWkid": 32613
+        }
+      },
+      "width": 1600,
+      "height": 1600,
+      "byte_size": 1006548,
+      "sha256": "6de01acd44e27c8619bfd10ed37a982df000abdfbc66f93c00829e7862cab8b8",
+      "export_tiles_allowed": true,
+      "snapshot_note": "Static USGS imagery for geographic context. The service uses multiple sources including Landsat at overview scales and NAIP at detailed scales. This is not live satellite imagery or imagery from the simulated rainfall event."
+    },
+    "topo": {
+      "file": "usgs-topo.jpg",
+      "label": "USGS topographic map",
+      "attribution": "USGS The National Map: National Boundaries Dataset, 3DEP Elevation Program, Geographic Names Information System, National Hydrography Dataset, National Land Cover Database, National Structures Dataset, and National Transportation Dataset; USGS Global Ecosystems; U.S. Census Bureau TIGER/Line data; USFS Road data; Natural Earth Data; U.S. Department of State HIU; NOAA National Centers for Environmental Information. Data refreshed September 4, 2026-v1.1",
+      "source_service_url": "https://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer",
+      "source_metadata_file": "usgs-topo-service.json",
+      "export_url": "https://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer/export?f=json&bbox=458064.58138263633%2C4352087.30159522%2C558064.5813826363%2C4452087.30159522&bboxSR=32613&imageSR=32613&size=1600%2C1600&format=jpg&dpi=96&transparent=false",
+      "returned_image_url": "https://basemap.nationalmap.gov/arcgis/rest/directories/basemap_output/USGSTopo_MapServer/_ags_map004596f872d64e5797ca872f64e77926.jpg",
+      "returned_extent": {
+        "xmin": 458064.58138263633,
+        "ymin": 4352087.30159522,
+        "xmax": 558064.5813826363,
+        "ymax": 4452087.30159522,
+        "spatialReference": {
+          "wkid": 32613,
+          "latestWkid": 32613
+        }
+      },
+      "width": 1600,
+      "height": 1600,
+      "byte_size": 1012743,
+      "sha256": "8d0e4ed13e0442ae80e52d08d5991b3d57205547bb6201dcbb139076e39e67bc",
+      "export_tiles_allowed": true,
+      "snapshot_note": "Static USGS topographic reference map with terrain, place names, roads and hydrography."
+    }
+  },
+  "usage_note": "Public USGS National Map service snapshots of Colorado, retained locally for the demo. Service source metadata and attribution are preserved alongside each image. The USGS imagery service describes CONUS orthoimagery as public domain; the topographic service combines National Map and other public-domain data. Verify service metadata before refreshing or extending coverage beyond this area.",
+  "usage_terms_url": "https://www.usgs.gov/faqs/what-are-terms-uselicensing-map-services-and-data-national-map",
+  "acknowledgment": "Map services and data available from U.S. Geological Survey, National Geospatial Program."
+}

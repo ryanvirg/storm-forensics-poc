@@ -2,7 +2,7 @@
 // Resolve from this module so project sites work below /repository-name/.
 const siteBase = new URL('./', import.meta.url);
 const durations = [3, 6, 12, 24, 48, 72];
-const sources = ['AORC', 'MRMS', 'GARR'];
+const sources = ['AORC', 'MRMS'];
 let configuration;
 
 async function readJSON(path, description) {
@@ -52,7 +52,7 @@ export async function getCatalog(duration) {
   const mode = await getMode();
   const path = mode === 'static'
     ? `data/catalog-${value}.json`
-    : `api/catalog?duration=${value}`;
+    : `api/historical/catalog?duration=${value}`;
   const catalog = await readJSON(path, `${value}-hour storm catalog`);
   if (!catalog || !Array.isArray(catalog.events) || !catalog.statistics || Number(catalog.duration_hours) !== value) {
     throw new Error('The storm catalog has an unexpected format. Rebuild or reload the site.');
@@ -62,18 +62,22 @@ export async function getCatalog(duration) {
 
 export async function getEvent(id, duration, source = 'AORC') {
   const value = validDuration(duration);
-  if (!sources.includes(source)) throw new Error('Choose a supported modeled source variant.');
+  if (!sources.includes(source)) throw new Error('Choose an available historical source.');
   const mode = await getMode();
-  if (mode === 'static' && !new RegExp(`^demo-${value}-(0[0-9]|1[0-9]|2[0-3])$`).test(id)) {
+  if (mode === 'static' && !new RegExp(`^hist-(front-range-2013|denver-may-2023|denver-june-2023)-${value}$`).test(id)) {
     throw new Error('This event is not part of the published demonstration catalog.');
   }
   const encodedID = encodeURIComponent(id);
   const path = mode === 'static'
     ? `data/events/${source}/${encodedID}.json`
-    : `api/events/${encodedID}?duration=${value}&source=${source}`;
+    : `api/historical/events/${encodedID}?duration=${value}&source=${source}`;
   const event = await readJSON(path, 'storm event');
   if (!event || event.id !== id || Number(event.duration_hours) !== value || !event.grid || !event.metrics || !Array.isArray(event.frames) || !event.frames.length) {
     throw new Error('The storm event has an unexpected format. Rebuild or reload the site.');
   }
   return event;
+}
+
+export async function getSources() {
+  return readJSON((await getMode()) === 'static' ? 'data/source-manifest.json' : 'api/historical/sources', 'source metadata');
 }

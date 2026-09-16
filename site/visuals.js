@@ -1,3 +1,4 @@
+import {contourSegments} from './rain-contours.js';
 const escapeHTML = (text) => String(text ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const isNumeric = n => n !== null && n !== undefined && n !== '' && typeof n !== 'boolean' && Number.isFinite(Number(n));
 const finite = (n, fallback = 0) => isNumeric(n) ? Number(n) : fallback;
@@ -13,7 +14,7 @@ function rainColor(value, maximum) {
 }
 
 /** Render projected rainfall cells, optionally over a basemap in the same local km extent. */
-export function drawStormMap(canvas, {grid = {}, values = [], centroids = [], frame = 0, max = 20, showTrack = true, showGrid = true, geography = null, basemapImage = null, showBoundary = true, rainOpacity = .58, basemapMode = 'imagery', rawCentroids = [], showRaw = false, centroidLabel = 'Centroid'} = {}) {
+export function drawStormMap(canvas, {grid = {}, values = [], centroids = [], frame = 0, max = 20, showTrack = true, showGrid = true, geography = null, basemapImage = null, showBoundary = true, rainOpacity = .58, basemapMode = 'imagery', rawCentroids = [], showRaw = false, centroidLabel = 'Centroid', contourData = []} = {}) {
   if (!canvas) return;
   const box = canvas.getBoundingClientRect();
   const width = Math.max(280, box.width || canvas.parentElement?.clientWidth || 600);
@@ -71,6 +72,20 @@ export function drawStormMap(canvas, {grid = {}, values = [], centroids = [], fr
     }
   }
   ctx.restore();
+  let contourCount=0;
+  for(const layer of contourData) {
+    const segments=contourSegments(grid,layer.values,layer.level);
+    contourCount+=segments.length;
+    ctx.save();ctx.beginPath();
+    for(const [a,b] of segments){ctx.moveTo(X(a.x),Y(a.y));ctx.lineTo(X(b.x),Y(b.y));}
+    ctx.setLineDash(layer.age?[5,5]:[]);
+    ctx.globalAlpha=layer.age?(.65-.2*layer.age):.9;
+    ctx.strokeStyle='#132733';ctx.lineWidth=layer.age?2.5:3;ctx.stroke();
+    ctx.strokeStyle=layer.age?'#b9dbe6':layer.level===1?'#edf7fa':layer.level===5?'#ffdb85':'#ff9b66';
+    ctx.lineWidth=layer.age?1:1.5;ctx.stroke();ctx.restore();
+  }
+  canvas.setAttribute('data-contour-segments',String(contourCount));
+  canvas.setAttribute('data-history-ages',contourData.filter(l=>l.age>0).map(l=>l.age).join(','));
   if (showGrid) {
     ctx.strokeStyle = hasBasemap ? 'rgba(230,242,247,.23)' : 'rgba(164,196,206,.13)'; ctx.lineWidth = 1; ctx.setLineDash([2,5]);
     for (let i = 0; i <= 4; i++) {
@@ -183,7 +198,7 @@ export function drawStormMap(canvas, {grid = {}, values = [], centroids = [], fr
   canvas.setAttribute('data-basemap-present',String(hasBasemap));
   canvas.setAttribute('data-rain-opacity',String(opacity));
   const reference = geographic ? `Rainfall grid over the Denver MHFD demonstration area, ${geography.crs || 'UTM Zone 13N'}. Coordinates are kilometres from the demonstration UTM origin; GN indicates grid north. ${hasBasemap ? basemapMode === 'topo' ? 'Topographic' : 'USGS imagery' : 'Plain grid'} background, rainfall opacity ${Math.round(opacity*100)} percent. ${showBoundary ? 'The gold dashed outline is the provisional MHFD district reference boundary.' : ''}` : 'Schematic projected rainfall grid.';
-  canvas.setAttribute('aria-label',`${reference} Frame ${frame+1}. Rainfall ranges from 0 to ${max}. ${showTrack ? `${centroidLabel} path shown; points represent hourly intervals. Future segments are dashed.${showRaw?' Gold dashed line shows raw positions.':''}` : ''}`);
+  canvas.setAttribute('aria-label',`${reference} Frame ${frame+1}. Rainfall ranges from 0 to ${max}. ${contourData.length?'Current rainfall contours at 1, 5 and 10 mm/h; earlier 1 mm/h outlines fade with age.':''} ${showTrack ? `${centroidLabel} path shown; points represent hourly intervals. Future segments are dashed.${showRaw?' Gold dashed line shows raw positions.':''}` : ''}`);
 }
 
 function niceTick(value) {

@@ -13,7 +13,7 @@ function rainColor(value, maximum) {
 }
 
 /** Render projected rainfall cells, optionally over a basemap in the same local km extent. */
-export function drawStormMap(canvas, {grid = {}, values = [], centroids = [], frame = 0, max = 20, showTrack = true, showGrid = true, geography = null, basemapImage = null, showBoundary = true, rainOpacity = .58, basemapMode = 'imagery', regionFrame = null, regionTracks = [], selectedRegion = null, showRegions = true, fullRegionTrack = false, trailFrames = 3} = {}) {
+export function drawStormMap(canvas, {grid = {}, values = [], centroids = [], frame = 0, max = 20, showTrack = true, showGrid = true, geography = null, basemapImage = null, showBoundary = true, rainOpacity = .58, basemapMode = 'imagery', rawCentroids = [], showRaw = false, centroidLabel = 'Centroid'} = {}) {
   if (!canvas) return;
   const box = canvas.getBoundingClientRect();
   const width = Math.max(280, box.width || canvas.parentElement?.clientWidth || 600);
@@ -60,16 +60,12 @@ export function drawStormMap(canvas, {grid = {}, values = [], centroids = [], fr
       ctx.strokeStyle = k%4 === 0 ? 'rgba(130,165,174,.085)' : 'rgba(130,165,174,.045)'; ctx.stroke();
     }
   }
-  const activeRegions = showRegions ? (regionFrame?.regions || []) : [];
-  const selected = activeRegions.find(r => r.track_id === selectedRegion);
-  const selectedCells = selected ? new Set(selected.runs.flatMap(([row,a,b]) => Array.from({length:b-a+1},(_,i) => row*xs.length+a+i))) : null;
   ctx.save(); ctx.globalAlpha = opacity;
   for (let row = 0; row < Math.min(ys.length,values.length); row++) {
     const vals = values[row] || [];
     for (let col = 0; col < Math.min(xs.length,vals.length); col++) {
       const value = finite(vals[col]);
       if (value <= 0) continue;
-      ctx.globalAlpha = opacity * (selectedCells && !selectedCells.has(row*xs.length+col) ? .18 : 1);
       ctx.fillStyle = rainColor(value,max);
       ctx.fillRect(X(xs[col]-xstep/2),Y(ys[row]+ystep/2),xstep*scale+.2,ystep*scale+.2);
     }
@@ -114,14 +110,23 @@ export function drawStormMap(canvas, {grid = {}, values = [], centroids = [], fr
     }
     ctx.restore();
   }
+  const pathHits=[];
+  if (showTrack && showRaw) {
+    ctx.save();ctx.strokeStyle='#ffce77';ctx.lineWidth=1.2;ctx.setLineDash([3,5]);ctx.beginPath();
+    rawCentroids.forEach((p,i)=>{if(!p)return;const prev=rawCentroids[i-1];if(prev)ctx.lineTo(X(p.x_km),Y(p.y_km));else ctx.moveTo(X(p.x_km),Y(p.y_km));});
+    ctx.stroke();ctx.setLineDash([]);
+    rawCentroids.forEach(p=>{if(!p)return;ctx.beginPath();ctx.arc(X(p.x_km),Y(p.y_km),2,0,Math.PI*2);ctx.fillStyle='#ffce77';ctx.fill();});ctx.restore();
+  }
   if (showTrack && centroids.length) {
     const valid = centroids.map((c,i) => c && isNumeric(c.x_km) && isNumeric(c.y_km) ? {x:X(Number(c.x_km)),y:Y(Number(c.y_km)),index:i} : null).filter(Boolean);
-    ctx.lineWidth = 1.6; ctx.strokeStyle = 'rgba(240,251,255,.75)'; ctx.setLineDash([4,5]); ctx.beginPath();
-    valid.forEach((c,i) => i && c.index === valid[i-1].index + 1 ? ctx.lineTo(c.x,c.y) : ctx.moveTo(c.x,c.y)); ctx.stroke(); ctx.setLineDash([]);
-    valid.forEach(c => {
-      if (c.index === frame) return;
-      ctx.beginPath(); ctx.arc(c.x,c.y,2.1,0,Math.PI*2); ctx.fillStyle = c.index < frame ? '#d6ebee' : '#a2bdc7'; ctx.fill();
-    });
+    pathHits.push(...valid);
+    for(let i=1;i<valid.length;i++){
+      const a=valid[i-1],b=valid[i];if(b.index!==a.index+1)continue;
+      ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);
+      ctx.setLineDash(b.index>frame?[4,5]:[]);ctx.lineWidth=4;ctx.strokeStyle='#112b3a99';ctx.stroke();
+      ctx.lineWidth=2;ctx.strokeStyle=b.index>frame?'#b3cbd3':'#ffffff';ctx.stroke();ctx.setLineDash([]);
+    }
+    valid.forEach(c=>{if(c.index===frame)return;ctx.beginPath();ctx.arc(c.x,c.y,3,0,Math.PI*2);ctx.fillStyle=c.index<frame?'#fff':'#a2bdc7';ctx.fill();ctx.lineWidth=1;ctx.strokeStyle='#244858';ctx.stroke();});
     const active = valid.find(c => c.index === frame);
     if (active) {
       ctx.shadowColor = 'rgba(255,255,255,.35)'; ctx.shadowBlur = 15;
@@ -129,7 +134,7 @@ export function drawStormMap(canvas, {grid = {}, values = [], centroids = [], fr
       ctx.beginPath(); ctx.arc(active.x,active.y,5,0,Math.PI*2); ctx.fillStyle = '#ffffff'; ctx.fill();
       ctx.shadowBlur = 0; ctx.strokeStyle = '#174452'; ctx.lineWidth = 2; ctx.stroke();
       ctx.font = '10px ui-sans-serif, system-ui, sans-serif';
-      const label = 'Whole-grid centroid', textWidth = ctx.measureText(label).width;
+      const label = centroidLabel, textWidth = ctx.measureText(label).width;
       const labelW = textWidth+16, labelH = 25;
       const candidates = [[active.x+14,active.y-12],[active.x-labelW-14,active.y-12],[active.x-labelW/2,active.y-39],[active.x-labelW/2,active.y+15]];
       const spot = candidates.find(([x,y]) => x >= left+3 && x+labelW <= left+mapW-3 && y >= top+3 && y+labelH <= top+mapH-3 && !occupied.some(r => x < r.x+r.w+3 && x+labelW+3 > r.x && y < r.y+r.h+3 && y+labelH+3 > r.y));
@@ -140,66 +145,14 @@ export function drawStormMap(canvas, {grid = {}, values = [], centroids = [], fr
       }
     }
   }
-  // Region positions use geometric centers. Weighted centers are reported in the panel.
-  const hits = [];
-  if (showRegions) {
-    const visibleTracks = selectedRegion == null
-      ? regionTracks.filter(t => activeRegions.some(r => r.track_id === t.id))
-      : regionTracks.filter(t => t.id === selectedRegion);
-    for (const track of visibleTracks) {
-      const points = track.points.filter(p => fullRegionTrack || (p.frame <= frame && p.frame >= frame-trailFrames));
-      const color = regionColor(track.id);
-      for (let i=1;i<points.length;i++) {
-        const a=points[i-1],b=points[i];
-        if(b.frame!==a.frame+1)continue;
-        ctx.beginPath();ctx.moveTo(X(a.x_km),Y(a.y_km));ctx.lineTo(X(b.x_km),Y(b.y_km));
-        ctx.strokeStyle='#07131b';ctx.lineWidth=5;ctx.setLineDash([]);ctx.stroke();
-        ctx.strokeStyle=color;ctx.lineWidth=2.5;ctx.setLineDash(b.frame>frame?[3,5]:[]);ctx.stroke();ctx.setLineDash([]);
-      }
-      for (const point of points) {
-        ctx.beginPath();ctx.arc(X(point.x_km),Y(point.y_km),point.frame===frame?4:2.5,0,Math.PI*2);
-        ctx.fillStyle=point.frame>frame?'#7d919e':color;ctx.fill();
-      }
-    }
-    for (const region of activeRegions) {
-      const cells = new Set(region.runs.flatMap(([row,a,b]) => Array.from({length:b-a+1},(_,i)=>row*xs.length+a+i)));
-      ctx.save();ctx.globalAlpha=selectedRegion==null||region.track_id===selectedRegion?1:.35;
-      ctx.beginPath();
-      for(const cell of cells){
-        const row=Math.floor(cell/xs.length),col=cell%xs.length;
-        const x0=xs[col]-xstep/2,x1=xs[col]+xstep/2,y0=ys[row]-ystep/2,y1=ys[row]+ystep/2;
-        if(col===0||!cells.has(cell-1)){ctx.moveTo(X(x0),Y(y0));ctx.lineTo(X(x0),Y(y1));}
-        if(col===xs.length-1||!cells.has(cell+1)){ctx.moveTo(X(x1),Y(y0));ctx.lineTo(X(x1),Y(y1));}
-        if(row===0||!cells.has(cell-xs.length)){ctx.moveTo(X(x0),Y(y0));ctx.lineTo(X(x1),Y(y0));}
-        if(row===ys.length-1||!cells.has(cell+xs.length)){ctx.moveTo(X(x0),Y(y1));ctx.lineTo(X(x1),Y(y1));}
-      }
-      ctx.lineJoin='round';ctx.lineWidth=3.5;ctx.strokeStyle='#07131bd9';ctx.stroke();
-      ctx.lineWidth=region.track_id===selectedRegion?2.1:1.3;ctx.strokeStyle=regionColor(region.track_id);ctx.stroke();
-      const px=X(region.center.x_km),py=Y(region.center.y_km);
-      const mark = ['split','merge','reorganization'].includes(region.status) ? ' '+region.status : region.status==='unresolved'?' ?':'';
-      const label=`R${region.track_id}${mark}`;ctx.font='bold 10px system-ui';
-      const w=ctx.measureText(label).width+12,h=20;
-      const options=[[px+7,py-23],[px-w-7,py-23],[px+7,py+5],[px-w-7,py+5]];
-      let spot=options.find(([x,y])=>x>=left&&x+w<=left+mapW&&y>=top&&y+h<=top+mapH&&!occupied.some(r=>x<r.x+r.w+2&&x+w+2>r.x&&y<r.y+r.h+2&&y+h+2>r.y));
-      if(!spot)spot=[Math.max(left+2,Math.min(left+mapW-w-2,px+7)),Math.max(top+2,Math.min(top+mapH-h-2,py-23))];
-      const [lx,ly]=spot;occupied.push({x:lx,y:ly,w,h});
-      ctx.fillStyle='#07131bed';ctx.fillRect(lx,ly,w,h);ctx.fillStyle=regionColor(region.track_id);ctx.textAlign='left';ctx.textBaseline='middle';ctx.fillText(label,lx+6,ly+h/2);
-      ctx.beginPath();ctx.arc(px,py,4,0,Math.PI*2);ctx.fill();ctx.lineWidth=1;ctx.strokeStyle='#fff';ctx.stroke();
-      hits.push({id:region.track_id,cells,label:{x:lx,y:ly,w,h}});ctx.restore();
-    }
-  }
-  // Hit-testing uses the same geometry as rendering, including letterboxing.
-  canvas.regionHitTest=(clientX,clientY)=>{
+  canvas.pathHitTest=(clientX,clientY)=>{
     const b=canvas.getBoundingClientRect(),px=(clientX-b.left)*width/b.width,py=(clientY-b.top)*height/b.height;
-    const label=hits.find(h=>px>=h.label.x&&px<=h.label.x+h.label.w&&py>=h.label.y&&py<=h.label.y+h.label.h);
-    if(label)return label.id;
-    if(px<left||px>=left+mapW||py<top||py>=top+mapH)return null;
-    const col=Math.floor((xmin+(px-left)/scale-(xs[0]-xstep/2))/xstep);
-    const row=Math.floor((ymin+(top+mapH-py)/scale-(ys[0]-ystep/2))/ystep);
-    return hits.find(h=>h.cells.has(row*xs.length+col))?.id??null;
+    const hit=pathHits.map(p=>({...p,d:Math.hypot(p.x-px,p.y-py)})).filter(p=>p.d<=9).sort((a,b)=>a.d-b.d)[0];
+    return hit?.index??null;
   };
-  canvas.setAttribute('data-region-count',String(activeRegions.length));
-  canvas.setAttribute('data-selected-region',selectedRegion==null?'':String(selectedRegion));
+  canvas.setAttribute('data-path-points',String(pathHits.length));
+  canvas.setAttribute('data-path-mode',centroidLabel);
+  canvas.setAttribute('data-raw-path',String(showTrack&&showRaw));
   ctx.restore();
   ctx.strokeStyle = 'rgba(137,170,184,.18)'; ctx.lineWidth = 1; ctx.strokeRect(left+.5,top+.5,mapW-1,mapH-1);
   ctx.fillStyle = '#708c9b'; ctx.font = '9px ui-monospace, SFMono-Regular, monospace'; ctx.textBaseline = 'middle';
@@ -230,7 +183,7 @@ export function drawStormMap(canvas, {grid = {}, values = [], centroids = [], fr
   canvas.setAttribute('data-basemap-present',String(hasBasemap));
   canvas.setAttribute('data-rain-opacity',String(opacity));
   const reference = geographic ? `Rainfall grid over the Denver MHFD demonstration area, ${geography.crs || 'UTM Zone 13N'}. Coordinates are kilometres from the demonstration UTM origin; GN indicates grid north. ${hasBasemap ? basemapMode === 'topo' ? 'Topographic' : 'USGS imagery' : 'Plain grid'} background, rainfall opacity ${Math.round(opacity*100)} percent. ${showBoundary ? 'The gold dashed outline is the provisional MHFD district reference boundary.' : ''}` : 'Schematic projected rainfall grid.';
-  canvas.setAttribute('aria-label',`${reference} Frame ${frame+1}. Rainfall ranges from 0 to ${max}. ${activeRegions.length} identified rainfall regions. ${showTrack ? 'The white dashed line shows the whole-grid centroid, not a tracked cell.' : ''}`);
+  canvas.setAttribute('aria-label',`${reference} Frame ${frame+1}. Rainfall ranges from 0 to ${max}. ${showTrack ? `${centroidLabel} path shown; points represent hourly intervals. Future segments are dashed.${showRaw?' Gold dashed line shows raw positions.':''}` : ''}`);
 }
 
 function niceTick(value) {
@@ -290,9 +243,4 @@ export function compassSVG(bearing) {
   if (!isNumeric(bearing)) return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 86 86" width="86" height="86" role="img" aria-label="Direction unavailable"><circle cx="43" cy="43" r="28" fill="none" stroke="#2d4350"/><text x="43" y="49" text-anchor="middle" fill="#809baa" font-family="system-ui,sans-serif" font-size="20">—</text></svg>`;
   const angle = ((finite(bearing)%360)+360)%360;
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 86 86" width="86" height="86" role="img" aria-label="Direction ${Math.round(angle)} degrees clockwise from north"><circle cx="43" cy="43" r="28" fill="none" stroke="#2d4350"/><circle cx="43" cy="43" r="18" fill="none" stroke="#223642" stroke-dasharray="2 4"/><path d="M43 12V20M43 66V74M12 43H20M66 43H74" stroke="#48616d"/><g fill="#809baa" font-family="system-ui,sans-serif" font-size="8" text-anchor="middle"><text x="43" y="9">N</text><text x="43" y="83">S</text><text x="5" y="46">W</text><text x="81" y="46">E</text></g><g transform="rotate(${angle} 43 43)"><path d="M43 20L36 49L43 45L50 49Z" fill="#64dcca"/><path d="M43 63L38 48L43 45L48 48Z" fill="#344f5b"/></g><circle cx="43" cy="43" r="3" fill="#b1eee0"/></svg>`;
-}
-
-export function regionColor(id) {
-  const colors=['#ff88cf','#8dedff','#c8ed73','#ffa66b','#d6a7ff','#6aecd0','#ffe986'];
-  return colors[(id-1)%colors.length];
 }

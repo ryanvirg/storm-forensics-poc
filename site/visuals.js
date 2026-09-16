@@ -14,7 +14,7 @@ function rainColor(value, maximum) {
 }
 
 /** Render projected rainfall cells, optionally over a basemap in the same local km extent. */
-export function drawStormMap(canvas, {grid = {}, values = [], centroids = [], frame = 0, max = 20, showTrack = true, showGrid = true, geography = null, basemapImage = null, showBoundary = true, rainOpacity = .58, basemapMode = 'imagery', rawCentroids = [], showRaw = false, centroidLabel = 'Centroid', contourData = []} = {}) {
+export function drawStormMap(canvas, {grid = {}, values = [], centroids = [], frame = 0, max = 20, showTrack = true, showGrid = true, geography = null, basemapImage = null, showBoundary = true, rainOpacity = .58, basemapMode = 'imagery', rawCentroids = [], showRaw = false, centroidLabel = 'Centroid', contourData = [], flowVector = null} = {}) {
   if (!canvas) return;
   const box = canvas.getBoundingClientRect();
   const width = Math.max(280, box.width || canvas.parentElement?.clientWidth || 600);
@@ -125,6 +125,18 @@ export function drawStormMap(canvas, {grid = {}, values = [], centroids = [], fr
     }
     ctx.restore();
   }
+  const vectorVisible=Boolean(showTrack&&flowVector?.available);
+  if(vectorVisible){
+    const a=flowVector.start,b=flowVector.end,ax=X(a.x_km),ay=Y(a.y_km),bx=X(b.x_km),by=Y(b.y_km);
+    const angle=Math.atan2(by-ay,bx-ax),ux=Math.cos(angle),uy=Math.sin(angle);
+    ctx.save();ctx.setLineDash([]);ctx.lineCap='round';
+    ctx.beginPath();ctx.moveTo(ax,ay);ctx.lineTo(bx,by);ctx.strokeStyle='#102b3dcc';ctx.lineWidth=7;ctx.stroke();ctx.strokeStyle='#ffffff';ctx.lineWidth=3;ctx.stroke();
+    // Inset arrowheads remain visible where the vector intersects the map border.
+    for(const fraction of [.55,.95]){const tx=ax+(bx-ax)*fraction,ty=ay+(by-ay)*fraction;
+      ctx.beginPath();ctx.moveTo(tx-13*ux+6*uy,ty-13*uy-6*ux);ctx.lineTo(tx,ty);ctx.lineTo(tx-13*ux-6*uy,ty-13*uy+6*ux);ctx.strokeStyle='#102b3d';ctx.lineWidth=6;ctx.stroke();ctx.strokeStyle='#fff';ctx.lineWidth=3;ctx.stroke();}
+    ctx.restore();
+  }
+  canvas.setAttribute('data-flow-vector',String(vectorVisible));
   const pathHits=[];
   if (showTrack && showRaw) {
     ctx.save();ctx.strokeStyle='#ffce77';ctx.lineWidth=1.2;ctx.setLineDash([3,5]);ctx.beginPath();
@@ -198,7 +210,7 @@ export function drawStormMap(canvas, {grid = {}, values = [], centroids = [], fr
   canvas.setAttribute('data-basemap-present',String(hasBasemap));
   canvas.setAttribute('data-rain-opacity',String(opacity));
   const reference = geographic ? `Rainfall grid over the Denver MHFD demonstration area, ${geography.crs || 'UTM Zone 13N'}. Coordinates are kilometres from the demonstration UTM origin; GN indicates grid north. ${hasBasemap ? basemapMode === 'topo' ? 'Topographic' : 'USGS imagery' : 'Plain grid'} background, rainfall opacity ${Math.round(opacity*100)} percent. ${showBoundary ? 'The gold dashed outline is the provisional MHFD district reference boundary.' : ''}` : 'Schematic projected rainfall grid.';
-  canvas.setAttribute('aria-label',`${reference} Frame ${frame+1}. Rainfall ranges from 0 to ${max}. ${contourData.length?'Current rainfall contours at 1, 5 and 10 mm/h; earlier 1 mm/h outlines fade with age.':''} ${showTrack ? `${centroidLabel} path shown; points represent hourly intervals. Future segments are dashed.${showRaw?' Gold dashed line shows raw positions.':''}` : ''}`);
+  canvas.setAttribute('aria-label',`${reference} Frame ${frame+1}. Rainfall ranges from 0 to ${max}. ${contourData.length?'Current rainfall contours at 1, 5 and 10 mm/h; earlier 1 mm/h outlines fade with age.':''} ${vectorVisible?'One arrow shows the whole-event rainfall progression, extended to map edges.':''} ${showTrack&&!flowVector ? `${centroidLabel} path shown; points represent hourly intervals. Future segments are dashed.${showRaw?' Gold dashed line shows raw positions.':''}` : ''}`);
 }
 
 function niceTick(value) {

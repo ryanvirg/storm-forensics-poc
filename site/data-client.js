@@ -81,3 +81,14 @@ export async function getEvent(id, duration, source = 'AORC') {
 export async function getSources() {
   return readJSON((await getMode()) === 'static' ? 'data/source-manifest.json' : 'api/historical/sources', 'source metadata');
 }
+
+export async function getTracking(event, profile) {
+  if (!event.tracking_profiles?.some(p => p.id === profile)) throw new Error('Unsupported tracking settings');
+  const mode = await getMode();
+  const path = mode === 'static'
+    ? `data/tracking/${event.source}/${event.id}/${profile}.json`
+    : `api/historical/tracking/${encodeURIComponent(event.id)}?duration=${event.duration_hours}&source=${event.source}&profile=${encodeURIComponent(profile)}`;
+  const result = await readJSON(path, 'rainfall region tracks');
+  if (result.event_id !== event.id || result.source !== event.source || result.profile?.id !== profile || result.frames?.length !== event.frames.length) throw new Error('Region tracks do not match this event');
+  return result;
+}
